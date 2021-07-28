@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
-// const connectedKnex = require('./knex-connector')
+const connectedKnex = require('./knex-connector')
+// const connectedKnex1 = require('./knex-connector')
 const bks_repo = require('./book-repo')
 
 const port = 8080;
@@ -18,48 +19,49 @@ app.use(express.urlencoded({
 // ############ CONNECT TO KNEX  ################
 // const connectedKnex = require('./knex-connector')
 
-// app.get('/books', async(req, res) => {
-//     const book = await connectedKnex('books').select('*')// .where("id", 1)
-//     res.status(200).json({book})
-// });
+app.get('/books', async(req, res) => {
+    const book = await connectedKnex('books').select('*')// .where("id", 1)
+    res.status(200).json({book})
+});
 
-// app.post('/books', async(req, res) => {
-//   try 
-//   {
-//     bks = req.body
-//     const result = await connectedKnex('books').insert(bks)
-//     res.status(201).json({
-//       res: 'success',
-//       url: `localhost:8080/books/${bks.ID}`,
-//       result
-//     })
-//   }
-//   catch(e) {
-//     res.status(400).send({
-//       status: 'fail',
-//       message: e.message
-//     })
-//   }
-// })
+app.post('/books', async(req, res) => {
+  try 
+  {
+    bks = req.body
+    const result = await connectedKnex('books').insert(bks)
+    res.status(201).json({
+      res: 'success',
+      url: `localhost:8080/books/${bks.id}`,
+      result
+    })
+  }
+  catch(e) {
+    res.status(400).send({
+      status: 'fail',
+      message: e.message
+    })
+  }
+})
 
-// app.put('/books', async(req, res) => {
-//     try
-//     {   
-//         bks = req.body
-//         const result = await connectedKnex("books").where('ID', bks.ID).update(bks);
-//         res.status(200).json({
-//             res: 'success',
-//             url: `localhost:8080/books/${bks.ID}`,
-//             result
-//         })
-//     }
-//     catch(e) {
-//         res.status(400).send({
-//             status: 'fail',
-//             message: e.message
-//         })
-//     }
-// })
+app.put('/books', async(req, res) => {
+    try
+    {   
+        bks = req.body
+        console.log(req.body)
+        const result = await connectedKnex("books").where('id', bks.id).update(bks); // postgres all lower case + JSON instead of text in post-man
+        res.status(200).json({
+            res: 'success',
+            url: `localhost:8080/books/${bks.id}`,
+            result
+        })
+    }
+    catch(e) {
+        res.status(400).send({
+            status: 'fail',
+            message: e.message
+        })
+    }
+})
 
 // app.delete('/books', async(req, res) => {
 //     try
@@ -154,69 +156,69 @@ app.use(express.urlencoded({
 // ############################ REPO PATTERN ####################################################
 // const bks_repo = require('./book-repo')
 
-app.get('/books', async(req, res) => {
-  const book_list = await bks_repo.getAllBook(); // ('books').select('*').where('id', 1)
-  res.status(200).json({book_list})
+// app.get('/books', async(req, res) => {
+//   const book_list = await bks_repo.getAllBook(); // ('books').select('*').where('id', 1)
+//   res.status(200).json({book_list})
 
-});
+// });
 
-app.post('/books', async (req, res) => {
-    try
-    {
-        bks = req.body
-        console.log(bks)
-        const result = await bks_repo.addBook(bks)
-        res.status(201).json({
-            res: 'success',
-            url: `localhost:8080/books/${bks.ID}`,
-            result
-        })
-    }
-    catch(e) {
-        res.status(400).send({
-            status: 'fail',
-            message: e.message
-        })
-    }
-})
+// app.post('/books', async (req, res) => {
+//     try
+//     {
+//         bks = req.body
+//         console.log(bks)
+//         const result = await bks_repo.addBook(bks)
+//         res.status(201).json({
+//             res: 'success',
+//             url: `localhost:8080/books/${bks.ID}`,
+//             result
+//         })
+//     }
+//     catch(e) {
+//         res.status(400).send({
+//             status: 'fail',
+//             message: e.message
+//         })
+//     }
+// })
 
-app.put('/books/:bks_id', async(req, res) => {
-    try
-    {
-        const bks_id = req.params.bks_id
-        bks = req.body
-        const result = await bks_repo.updateBook(bks, bks_id)
-        res.status(200).json({
-            res: 'success',
-            url: `localhost:8080/books/${bks.ID}`,
-            result
-        })
-    }
-    catch(e) {
-        res.status(400).send({
-            status: 'fail',
-            message: e.message
-        })
-    }
-});
+// app.put('/books/:bks_id', async(req, res) => {
+//     try
+//     {
+//         const bks_id = req.params.bks_id
+//         bks = req.body
+//         const result = await bks_repo.updateBook(bks, bks_id)
+//         res.status(200).json({
+//             res: 'success',
+//             url: `localhost:8080/books/${bks.ID}`,
+//             result
+//         })
+//     }
+//     catch(e) {
+//         res.status(400).send({
+//             status: 'fail',
+//             message: e.message
+//         })
+//     }
+// });
 
-app.delete('/books/:bks_id', async(req, res) => {
-    try
-    {
-        const bks_id = req.params.bks_id
-        const result = await bks_repo.deleteBook(bks_id)
-        res.status(200).json({
-            res: 'success',
-            url: `localhost:8080/books/${bks_id}`,
-            result
-        })
-    }
-    catch(e) {
-        res.status(400).send({
-            status: 'fail',
-            message: e.message
-        })
-    }
-});
+// app.delete('/books/:bks_id', async(req, res) => {
+//     try
+//     {
+//         const bks_id = req.params.bks_id
+//         const result = await bks_repo.deleteBook(bks_id)
+//         res.status(200).json({
+//             res: 'success',
+//             url: `localhost:8080/books/${bks_id}`,
+//             result
+//         })
+//     }
+//     catch(e) {
+//         res.status(400).send({
+//             status: 'fail',
+//             message: e.message
+//         })
+//     }
+// });
 
 app.listen(port, () => console.log(`Listening to port ${port}`))
